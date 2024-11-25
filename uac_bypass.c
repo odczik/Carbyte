@@ -64,6 +64,8 @@ void clean_registry() {
 }
 
 int BypassUAC(char* payload){
+    /* TODO: Check system UAC level */
+
     printf("Setting registry...\n");
     set_registry(payload);
 
