@@ -6,6 +6,7 @@
         "stdlib.h": "c",
         "service.h": "c",
         "uac_bypass.h": "c",
-        "watchdog.h": "c"
+        "watchdog.h": "c",
+        "payload.h": "c"
     }
 }

