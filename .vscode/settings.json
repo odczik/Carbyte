@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*html": "html",
+        "windows.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "service.h": "c",
+        "uac_bypass.h": "c",
+        "watchdog.h": "c"
+    }
+}
