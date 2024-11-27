@@ -73,64 +73,56 @@ void GetDestination(char destination[MAX_PATH]){
 
 void Starter(char path[], char arguments[]){
     // Start the executable
-    if(IsElevated()){
-        STARTUPINFO si;
-        PROCESS_INFORMATION pi;
-        // Initialize STARTUPINFO and PROCESS_INFORMATION structs
-        ZeroMemory(&si, sizeof(si));
-        si.cb = sizeof(si);
-        ZeroMemory(&pi, sizeof(pi));
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    // Initialize STARTUPINFO and PROCESS_INFORMATION structs
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
 
-        char commandLine[128];
-        snprintf(commandLine, sizeof(commandLine), "\"%s\" %s", path, arguments);
-        // Create the process with no inherited handles, custom environment, and no working directory inheritance
+    char commandLine[128];
+    snprintf(commandLine, sizeof(commandLine), "\"%s\" %s", path, arguments);
+    // Create the process with no inherited handles, custom environment, and no working directory inheritance
         CreateProcessA(
-                NULL,                          // Path to executable
-                commandLine,                   // Command line arguments
-                NULL,                          // Process security attributes
-                NULL,                          // Thread security attributes
-                FALSE,                         // Don't inherit handles
-                DETACHED_PROCESS | CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW, // Start in a new console (optional)
-                NULL,                          // No custom environment
-                NULL,                          // Don't inherit current directory
-                &si,                           // Startup information
-                &pi);                          // Process information
-        // Close process and thread handles
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-    } else {
-        ShellExecuteA(NULL, "open", path, arguments, NULL, SW_HIDE);
-    }
+            NULL,                          // Path to executable
+            commandLine,                   // Command line arguments
+            NULL,                          // Process security attributes
+            NULL,                          // Thread security attributes
+            FALSE,                         // Don't inherit handles
+            DETACHED_PROCESS | CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW, // Start in a new console (optional)
+            NULL,                          // No custom environment
+            NULL,                          // Don't inherit current directory
+            &si,                           // Startup information
+            &pi);                          // Process information
+    // Close process and thread handles
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
 }
 
 void StartProgram(char executable[], char path[], char arguments[]){
-    if(IsElevated()){
-        STARTUPINFO si;
-        PROCESS_INFORMATION pi;
-        // Initialize STARTUPINFO and PROCESS_INFORMATION structs
-        ZeroMemory(&si, sizeof(si));
-        si.cb = sizeof(si);
-        ZeroMemory(&pi, sizeof(pi));
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    // Initialize STARTUPINFO and PROCESS_INFORMATION structs
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
 
-        char commandLine[128];
-        snprintf(commandLine, sizeof(commandLine), "\"%s\" -starter \"%s\" %s", executable, path, arguments);
-        // MessageBoxA(NULL, commandLine, "Command Line", MB_OK);
-        // Create the process with no inherited handles, custom environment, and no working directory inheritance
+    char commandLine[128];
+    snprintf(commandLine, sizeof(commandLine), "\"%s\" -starter \"%s\" %s", executable, path, arguments);
+    // MessageBoxA(NULL, commandLine, "Command Line", MB_OK);
+    // Create the process with no inherited handles, custom environment, and no working directory inheritance
         CreateProcessA(
-                NULL,                          // Path to executable
-                commandLine,                   // Command line arguments
-                NULL,                          // Process security attributes
-                NULL,                          // Thread security attributes
-                FALSE,                         // Don't inherit handles
-                DETACHED_PROCESS | CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW, // Start in a new console (optional)
-                NULL,                          // No custom environment
-                NULL,                          // Don't inherit current directory
-                &si,                           // Startup information
-                &pi);                          // Process information
-        // Close process and thread handles
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-    } else {
-        ShellExecuteA(NULL, "open", path, arguments, NULL, SW_HIDE);
-    }
+            NULL,                          // Path to executable
+            commandLine,                   // Command line arguments
+            NULL,                          // Process security attributes
+            NULL,                          // Thread security attributes
+            FALSE,                         // Don't inherit handles
+            DETACHED_PROCESS | CREATE_BREAKAWAY_FROM_JOB | CREATE_NO_WINDOW, // Start in a new console (optional)
+            NULL,                          // No custom environment
+            NULL,                          // Don't inherit current directory
+            &si,                           // Startup information
+            &pi);                          // Process information
+    // Close process and thread handles
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
 }
