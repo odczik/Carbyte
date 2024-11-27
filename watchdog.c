@@ -33,6 +33,8 @@ void watchdog(char * argv[]){
 
     int firstRun = 1;
 
+    Sleep(3000);
+
     // Watchdog process
     while(1){
         // Check if the process is running

